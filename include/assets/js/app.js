@@ -1,8 +1,16 @@
 window.onload = function () {
-    let app = new Vue({
-        el: '#vueApp',
+    Vue.component('vueApplications1', {
+        template: '#vueApplications1',
+    });
+    const vueApplications = new Vue({
+        el: '#vueApplications',
         data: {
-            step: 1
+            step: 1,
+            url: null,
+            emailCan: null,
+            name: null,
+            keyWord: null,
+            candidatesInformation: [],
         },
         methods: {
             changeScreens(step) {
@@ -23,7 +31,45 @@ window.onload = function () {
                         this.step = step
                         break
                 }
-            }
+            },
+            searchCandidate: async function (url, button) {
+                switch (button) {
+                    case 1:
+                        this.name = null;
+                        this.keyWord = null;
+                        break;
+                    case 2:
+                        this.emailCan = null;
+                        this.keyWord = null;
+                        break;
+                    case 3:
+                        this.emailCan = null;
+                        this.name = null;
+                        break;
+                }
+                this.url = url;
+                const verifications = await axios.post(this.url + '/incluyeme-applications/include/verifications.php',
+                    {
+                        email: this.emailCan,
+                        name: this.name,
+                        keyword: this.keyWord,
+                        candidateSearch: true
+                    })
+                    .then(function (response) {
+                        return response
+                    })
+                    .catch(function (error) {
+                        return true;
+                    });
+                this.candidatesInformation = verifications.data.message;
+                console.log(verifications)
+                this.changeScreens(2)
+            },
+            openUrl(url) {
+                console.log(url)
+                window.open(url);
+                return false;
+            },
         }
     })
 }
