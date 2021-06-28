@@ -167,7 +167,7 @@ class incluyeme_applications
                                              AND lVal.meta_key = 'last_name'
                                              WHERE  {$prefix}usermeta.user_email Like '{$mail}'";
         } else {
-            return null;
+            return [];
         }
         return self::getCV(self::executeQueries($query));
     }

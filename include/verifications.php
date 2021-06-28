@@ -6,7 +6,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $verifications = new incluyeme_applications();
     error_log(print_r($_POST, true));
     if (isset($_POST['candidateSearch'])) {
-        error_log(print_r($_POST, true));
         $verifications::setCandidate($_POST['name']);
         $verifications::setCandidateMail($_POST['emailCan']);
         $verifications::setCandidateKey($_POST['keyword']);
