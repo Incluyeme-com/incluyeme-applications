@@ -85,7 +85,7 @@ class incluyeme_applications
                                              WHERE  {$prefix}usermeta.meta_value Like '{$candidate}' OR lVal.meta_value  Like '{$candidate}'";
         } else if (self::getCandidateKey()) {
             $key = self::getCandidateKey();
-            $query = "SELECT   {$prefix}users.ID            AS users_id,
+            $query = "SELECT {$prefix}users.ID AS users_id,
        {$prefix}users.user_email,
          {$prefix}users.display_name,
          {$prefix}wpjb_resume.phone,
@@ -113,7 +113,7 @@ class incluyeme_applications
                          LEFT OUTER JOIN   {$prefix}usermeta lVal
                                          ON   {$prefix}users.ID = lVal.user_id
                                              AND lVal.meta_key = 'last_name'
-                                             WHERE  {$prefix}usermeta.user_email Like '{$key}'";
+                                             WHERE  {$prefix}users.user_email Like '{$key}'";
             
             $query .= ' OR ' . $prefix . 'usermeta.meta_value Like  "%' . $key . '%" ';
             $query .= ' OR ' . $prefix . 'wpjb_application.status Like "%' . $key . '%" ';
