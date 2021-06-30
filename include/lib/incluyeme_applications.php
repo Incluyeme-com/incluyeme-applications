@@ -82,7 +82,10 @@ class incluyeme_applications
                          LEFT OUTER JOIN   {$prefix}usermeta lVal
                                          ON   {$prefix}users.ID = lVal.user_id
                                              AND lVal.meta_key = 'last_name'
-                                             WHERE  {$prefix}usermeta.meta_value Like '{$candidate}' OR lVal.meta_value  Like '{$candidate}'";
+                                             WHERE 
+                                              {$prefix}usermeta.meta_value Like '{$candidate}' 
+                                              OR lVal.meta_value  Like '{$candidate}'
+                                              GROUP BY {$prefix}wpjb_resume.id";
         } else if (self::getCandidateKey()) {
             $key = self::getCandidateKey();
             $query = "SELECT {$prefix}users.ID AS users_id,
@@ -134,7 +137,8 @@ class incluyeme_applications
                             ON {$prefix}wpjb_job.employer_id = {$prefix}wpjb_company.id
                             WHERE ({$prefix}wpjb_resume_detail.detail_title LIKE '%" . $key . "%'
                       OR   {$prefix}wpjb_resume_detail.grantor LIKE  '%" . $key . "%' OR 
-                        {$prefix}wpjb_resume_detail.detail_description  LIKE  '%" . $key . "%') ) ";
+                        {$prefix}wpjb_resume_detail.detail_description  LIKE  '%" . $key . "%') ) 
+                        GROUP BY {$prefix}wpjb_resume.id";
         } else if (self::getCandidateMail()) {
             $mail = self::getCandidateMail();
             $query = "SELECT   {$prefix}users.ID            AS users_id,
@@ -165,7 +169,8 @@ class incluyeme_applications
                          LEFT OUTER JOIN   {$prefix}usermeta lVal
                                          ON   {$prefix}users.ID = lVal.user_id
                                              AND lVal.meta_key = 'last_name'
-                                             WHERE  {$prefix}usermeta.user_email Like '{$mail}'";
+                                             WHERE  {$prefix}usermeta.user_email Like '{$mail}'
+                                             GROUP BY {$prefix}wpjb_resume.id";
         } else {
             return [];
         }
