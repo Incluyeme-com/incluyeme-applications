@@ -8,9 +8,16 @@ class incluyeme_applications
     protected static ?string $candidate;
     protected static ?string $candidateMail;
     protected static ?string $candidateKey;
+    protected static ?string $jobId;
+    protected static ?string $employed;
+    protected static ?string $job;
+    protected static ?string $message;
+    protected static ?string $applicationMessage;
+    protected static array $candidates;
+    protected static array $jobs;
     private static wpdb $wp;
     private static string $incluyemeFilters;
-    private static $prefix;
+    private static ?string $prefix;
     
     public function __construct()
     {
@@ -19,6 +26,14 @@ class incluyeme_applications
         self::$candidate = null;
         self::$candidateMail = null;
         self::$candidateKey = null;
+        self::$message = null;
+        
+        self::$candidates = [];
+        self::$jobs = [];
+        self::$applicationMessage = null;
+        self::$job = null;
+        self::$employed = null;
+        self::$jobId = null;
         self::$incluyemeFilters = 'incluyemeFiltersCV';
         self::$prefix = self::$wp->prefix;
     }
@@ -53,7 +68,7 @@ class incluyeme_applications
         $query = "";
         $prefix = self::$prefix;
         if (self::getCandidate()) {
-            $candidate = self::getCandidate();
+            $candidate = "%" . self::getCandidate() . "%";
             $query = "SELECT   {$prefix}users.ID            AS users_id,
        {$prefix}users.user_email,
          {$prefix}users.display_name,
@@ -87,7 +102,7 @@ class incluyeme_applications
                                               OR lVal.meta_value  Like '{$candidate}'
                                               GROUP BY {$prefix}wpjb_resume.id";
         } else if (self::getCandidateKey()) {
-            $key = self::getCandidateKey();
+            $key = "%" . self::getCandidateKey() . "%";
             $query = "SELECT {$prefix}users.ID AS users_id,
        {$prefix}users.user_email,
          {$prefix}users.display_name,
@@ -140,7 +155,7 @@ class incluyeme_applications
                         {$prefix}wpjb_resume_detail.detail_description  LIKE  '%" . $key . "%') ) 
                         GROUP BY {$prefix}wpjb_resume.id";
         } else if (self::getCandidateMail()) {
-            $mail = self::getCandidateMail();
+            $mail = "%" . self::getCandidateMail() . "%";
             $query = "SELECT   {$prefix}users.ID            AS users_id,
        {$prefix}users.user_email,
          {$prefix}users.display_name,
@@ -294,4 +309,216 @@ class incluyeme_applications
     {
         return self::$wp->get_results($sql);
     }
+    
+    public function searchEmployee()
+    {
+        $prefix = self::$prefix;
+        $where = "";
+        $query = "SELECT
+  {$prefix}wpjb_job.id,
+  {$prefix}wpjb_job.employer_id,
+  {$prefix}wpjb_job.post_id,
+  {$prefix}wpjb_job.job_title,
+  {$prefix}wpjb_job.company_name,
+  {$prefix}wpjb_company.company_name AS company
+FROM {$prefix}wpjb_job
+  LEFT JOIN {$prefix}wpjb_company
+    ON {$prefix}wpjb_job.employer_id = {$prefix}wpjb_company.id
+";
+        if (self::getJob()) {
+            $job = "%" . self::getJob() . "%";
+            $where = "WHERE {$prefix}wpjb_job.job_title LIKE '{$job}' OR 
+        {$prefix}wpjb_job.job_description LIKE '{$job}' OR 
+        {$prefix}wpjb_job.job_slug LIKE '{$job}' ";
+        } else if (self::getJobId()) {
+            $job = self::getJobId();
+            $where = "WHERE {$prefix}wpjb_job.id  =  '{$job}'";
+        } else if (self::getEmployed()) {
+            $job = "%" . self::getEmployed() . "%";
+            $where = "WHERE {$prefix}wpjb_job.company_name LIKE '{$job}' OR 
+        {$prefix}wpjb_company.company_name LIKE '{$job}' OR 
+        {$prefix}wpjb_job.job_slug LIKE '{$job}' OR
+         {$prefix}wpjb_company.company_slogan LIKE '{$job}' OR 
+  {$prefix}wpjb_company.company_info LIKE '{$job}'
+        ";
+        }
+        $query = $query . $where . " GROUP BY {$prefix}wpjb_job.id";
+        return self::executeQueries($query);
+    }
+    
+    /**
+     * @return string|null
+     */
+    public static function getJob(): ?string
+    {
+        return self::$job;
+    }
+    
+    /**
+     * @param string|null $job
+     */
+    public static function setJob(?string $job): void
+    {
+        self::$job = $job;
+    }
+    
+    /**
+     * @return string|null
+     */
+    public static function getJobId(): ?string
+    {
+        return self::$jobId;
+    }
+    
+    /**
+     * @param string|null $jobId
+     */
+    public static function setJobId(?string $jobId): void
+    {
+        self::$jobId = $jobId;
+    }
+    
+    /**
+     * @return string|null
+     */
+    public static function getEmployed(): ?string
+    {
+        return self::$employed;
+    }
+    
+    /**
+     * @param string|null $employed
+     */
+    public static function setEmployed(?string $employed): void
+    {
+        self::$employed = $employed;
+    }
+    
+    public function appApplications(): bool
+    {
+        global $wpdb;
+        $prefix = self::$prefix;
+        $whereIn = '"' . implode('","', self::getCandidates()) . '"';
+        $whereInJobs = '"' . implode('","', self::getJobs()) . '"';
+        $candidatesEmail = $query = "SELECT   {$prefix}users.ID            AS users_id,
+       {$prefix}users.user_email,
+         {$prefix}users.display_name,
+         {$prefix}wpjb_resume.phone,
+         {$prefix}posts.guid,
+         {$prefix}usermeta.meta_value AS first_name,
+         {$prefix}usermeta.meta_key,
+         {$prefix}wpjb_resume.candidate_state,
+         {$prefix}wpjb_resume.candidate_location,
+         {$prefix}wpjb_resume.id      AS resume_id,
+       lVal.meta_value        AS last_name
+                FROM   {$prefix}wpjb_resume
+                         LEFT JOIN   {$prefix}users
+                                   ON   {$prefix}users.ID = {$prefix}wpjb_resume.user_id
+                         LEFT JOIN   {$prefix}wpjb_application
+                                   ON   {$prefix}wpjb_resume.user_id = {$prefix}wpjb_application.user_id
+                         LEFT JOIN   {$prefix}wpjb_job
+                                   ON   {$prefix}wpjb_application.job_id = {$prefix}wpjb_job.id
+                         LEFT OUTER JOIN   {$prefix}posts
+                                         ON   {$prefix}wpjb_resume.post_id = {$prefix}posts.ID
+                         INNER JOIN   {$prefix}usermeta
+                                    ON   {$prefix}users.ID = {$prefix}usermeta.user_id
+                                        AND   {$prefix}usermeta.meta_key = 'first_name'
+                         LEFT OUTER JOIN   {$prefix}wpjb_company
+                                         ON   {$prefix}wpjb_job.employer_id =   {$prefix}wpjb_company.id
+                         LEFT OUTER JOIN   {$prefix}usermeta lVal
+                                         ON   {$prefix}users.ID = lVal.user_id
+                                             AND lVal.meta_key = 'last_name'
+                                             WHERE {$prefix}users.ID  in ($whereIn)
+                                              GROUP BY {$prefix}wpjb_resume.id ";
+        $candidatesEmail = self::executeQueries($candidatesEmail);
+        
+        $candidatesJobs = $query = "SELECT   * 
+                FROM   {$prefix}wpjb_job WHERE {$prefix}wpjb_job.id  in ($whereInJobs)
+                                              GROUP BY {$prefix}wpjb_job.id ";
+        $candidatesJobs = self::executeQueries($candidatesJobs);
+        for ($i = 0; $i < count($candidatesEmail); $i++) {
+            for ($j = 0; $j < count($candidatesJobs); $j++) {
+                error_log(print_r($candidatesJobs, true));
+                self::$wp->insert($prefix . "wpjb_application", [
+                    "job_id" => $candidatesJobs[$j]->id,
+                    "user_id" => $candidatesEmail[$i]->users_id,
+                    "applied_at" => date("Y-m-d H:i:s", time()),
+                    "applicant_name" => $candidatesEmail[$i]->first_name . " " . $candidatesEmail[$i]->last_name,
+                    "message" => self::getApplicationMessage(),
+                    "email" => $candidatesEmail[$i]->user_email,
+                    "status" => 1
+                ]);
+            }
+            if (self::getApplicationMessage()) {
+                wp_mail($candidatesEmail[$i]->user_email, 'Ha aplicado exitosamente', self::getMessage());
+            }
+            
+        }
+        return true;
+    }
+    
+    /**
+     * @return array
+     */
+    public static function getCandidates(): array
+    {
+        return self::$candidates;
+    }
+    
+    /**
+     * @param array $candidates
+     */
+    public static function setCandidates(array $candidates): void
+    {
+        self::$candidates = $candidates;
+    }
+    
+    /**
+     * @return array
+     */
+    public static function getJobs(): array
+    {
+        return self::$jobs;
+    }
+    
+    /**
+     * @param array $jobs
+     */
+    public static function setJobs(array $jobs): void
+    {
+        self::$jobs = $jobs;
+    }
+    
+    /**
+     * @return string|null
+     */
+    public static function getMessage(): ?string
+    {
+        return self::$message;
+    }
+    
+    /**
+     * @param string|null $message
+     */
+    public static function setMessage(?string $message): void
+    {
+        self::$message = $message;
+    }
+    
+    /**
+     * @return string|null
+     */
+    public static function getApplicationMessage(): ?string
+    {
+        return self::$applicationMessage;
+    }
+    
+    /**
+     * @param string|null $applicationMessage
+     */
+    public static function setApplicationMessage(?string $applicationMessage): void
+    {
+        self::$applicationMessage = $applicationMessage;
+    }
+    
 }
