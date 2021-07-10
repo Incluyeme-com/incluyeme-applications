@@ -19,6 +19,10 @@ window.onload = function () {
             jobs: new Map(),
             textApplication: null,
             textEmail: null,
+            resultsNumbers: 1,
+            resultsNumbersEmployee: 1,
+            buttonAplicant: null,
+            buttonEmplotee: null
         },
         methods: {
             changeScreens(step) {
@@ -43,7 +47,7 @@ window.onload = function () {
                         break
                 }
             },
-            searchCandidate: async function (url, button) {
+            searchCandidate: async function (url, button, page) {
                 switch (button) {
                     case 1:
                         this.name = null;
@@ -59,12 +63,15 @@ window.onload = function () {
                         break;
                 }
                 this.url = url;
+                this.buttonAplicant = button;
+                this.resultsNumbers = page ? this.resultsNumbers + page : this.resultsNumbers
                 const verifications = await axios.post(this.url + '/incluyeme-applications/include/verifications.php',
                     {
                         email: this.emailCan,
                         name: this.name,
                         keyword: this.keyWord,
-                        candidateSearch: true
+                        candidateSearch: true,
+                        resultsNumbers: this.resultsNumbers
                     })
                     .then(function (response) {
                         return response
@@ -95,12 +102,15 @@ window.onload = function () {
                         this.jobId = null;
                         break;
                 }
+                this.buttonAplicant = button;
+                this.resultsNumbersEmployee = page ? this.resultsNumbersEmployee + page : this.resultsNumbersEmployee
                 const verifications = await axios.post(this.url + '/incluyeme-applications/include/verifications.php',
                     {
                         job: this.job,
                         company: this.company,
                         jobId: this.jobId,
-                        employerSearch: true
+                        employerSearch: true,
+                        resultsNumbers: this.resultsNumbersEmployee
                     })
                     .then(function (response) {
                         return response
@@ -110,6 +120,17 @@ window.onload = function () {
                     });
                 this.employeeInformation = verifications.data.message;
                 this.changeScreens(4)
+            },
+            searchMore: async function (type, page) {
+                document.body.scrollTop = document.documentElement.scrollTop = 0;
+                switch (type) {
+                    case 1:
+                        await this.searchCandidate(this.url, this.buttonAplicant, page)
+                        break
+                    case 2:
+                        await this.searchEmployee(this.buttonEmplotee, page)
+                        break
+                }
             },
             addCandidate(id) {
                 if (this.applicants.get(id)) {

@@ -87,6 +87,15 @@ function incluyeme_applicants_shortcode()
 				</div>
 				<hr class='w-100'>
 			</div>
+<div class='container text-right mt-2'>
+			<button type='button' v-on:click='searchMore(1, 1)' v-if='candidatesInformation.length >= 10' id='showMore' class='btn btn-secondary'
+			        style='font-size: 0.75rem;'>
+				<span>Cargar mas...</span>
+			</button>
+				<div class='container text-right mt-2' v-else-if='candidatesInformation.length < 10'>
+			<p>No hay mas resultados</p>
+		</div>
+		</div>
 			<div class='mt-4 row'>
 				<div class='col-md-12 text-right'>
 					<button @click.prevent='changeScreens(1)' type='submit' class='btn btn-primary'>Atras</button>
@@ -145,6 +154,15 @@ function incluyeme_applicants_shortcode()
 			<div  class='mt-1' v-for='(data, index) of employeeInformation'>
 				<input class='mt1' @change='addJob(data.id)' type='checkbox'> {{data.job_title + ' ' + (data.company_name ? data.company_name : data.company)}}
 			</div>
+			<div class='container text-right mt-2'>
+			<button type='button' v-on:click='searchMore(2, 1)' v-if='candidatesInformation.length >= 10' id='showMore' class='btn btn-secondary'
+			        style='font-size: 0.75rem;'>
+				<span>Cargar mas...</span>
+			</button>
+				<div class='container text-right mt-2' v-else-if='candidatesInformation.length < 10'>
+			<p>No hay mas resultados</p>
+		</div>
+		</div>
 			<div class='mt-4 row'>
 				<div class='col-md-12 text-right'>
 					<button @click.prevent='changeScreens(3)' type='submit' class='btn btn-primary'>Atras</button>

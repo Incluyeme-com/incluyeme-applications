@@ -18,6 +18,7 @@ class incluyeme_applications
     private static wpdb $wp;
     private static string $incluyemeFilters;
     private static ?string $prefix;
+    public ?int $resultsNumbers = 1;
     
     public function __construct()
     {
@@ -184,12 +185,12 @@ class incluyeme_applications
                          LEFT OUTER JOIN   {$prefix}usermeta lVal
                                          ON   {$prefix}users.ID = lVal.user_id
                                              AND lVal.meta_key = 'last_name'
-                                             WHERE  {$prefix}usermeta.user_email Like '{$mail}'
+                                             WHERE  {$prefix}users.user_email Like '{$mail}'
                                              GROUP BY {$prefix}wpjb_resume.id";
         } else {
             return [];
         }
-        return self::getCV(self::executeQueries($query));
+        return self::getCV($this->paginatedQueries($query));
     }
     
     /**
@@ -313,7 +314,7 @@ class incluyeme_applications
     public function searchEmployee()
     {
         $prefix = self::$prefix;
-        $where = "";
+        $where = " WHERE {$prefix}wpjb_job.is_active = 1 AND {$prefix}wpjb_job.job_expires_at < NOW() AND {$prefix}wpjb_job.is_approved = 1 ";
         $query = "SELECT
   {$prefix}wpjb_job.id,
   {$prefix}wpjb_job.employer_id,
@@ -327,23 +328,23 @@ FROM {$prefix}wpjb_job
 ";
         if (self::getJob()) {
             $job = "%" . self::getJob() . "%";
-            $where = "WHERE {$prefix}wpjb_job.job_title LIKE '{$job}' OR 
+            $where .= " AND ({$prefix}wpjb_job.job_title LIKE '{$job}' OR 
         {$prefix}wpjb_job.job_description LIKE '{$job}' OR 
-        {$prefix}wpjb_job.job_slug LIKE '{$job}' ";
+        {$prefix}wpjb_job.job_slug LIKE '{$job}' )";
         } else if (self::getJobId()) {
             $job = self::getJobId();
-            $where = "WHERE {$prefix}wpjb_job.id  =  '{$job}'";
+            $where .= "AND {$prefix}wpjb_job.id  =  '{$job}'";
         } else if (self::getEmployed()) {
             $job = "%" . self::getEmployed() . "%";
-            $where = "WHERE {$prefix}wpjb_job.company_name LIKE '{$job}' OR 
+            $where .= " AND ( {$prefix}wpjb_job.company_name LIKE '{$job}' OR 
         {$prefix}wpjb_company.company_name LIKE '{$job}' OR 
         {$prefix}wpjb_job.job_slug LIKE '{$job}' OR
          {$prefix}wpjb_company.company_slogan LIKE '{$job}' OR 
-  {$prefix}wpjb_company.company_info LIKE '{$job}'
+  {$prefix}wpjb_company.company_info LIKE '{$job}' )
         ";
         }
         $query = $query . $where . " GROUP BY {$prefix}wpjb_job.id";
-        return self::executeQueries($query);
+        return $this->paginatedQueries($query);
     }
     
     /**
@@ -492,22 +493,6 @@ FROM {$prefix}wpjb_job
     /**
      * @return string|null
      */
-    public static function getMessage(): ?string
-    {
-        return self::$message;
-    }
-    
-    /**
-     * @param string|null $message
-     */
-    public static function setMessage(?string $message): void
-    {
-        self::$message = $message;
-    }
-    
-    /**
-     * @return string|null
-     */
     public static function getApplicationMessage(): ?string
     {
         return self::$applicationMessage;
@@ -521,4 +506,27 @@ FROM {$prefix}wpjb_job
         self::$applicationMessage = $applicationMessage;
     }
     
+    /**
+     * @return string|null
+     */
+    public static function getMessage(): ?string
+    {
+        return self::$message;
+    }
+    
+    /**
+     * @param string|null $message
+     */
+    public static function setMessage(?string $message): void
+    {
+        self::$message = $message;
+    }
+    
+    public function paginatedQueries($sql): array
+    {
+        $resultNumber = $this->resultsNumbers;
+        $LIMITQuery = ($resultNumber - 1) * 10 ?: 0;
+        $sql .= " LIMIT {$LIMITQuery}, 10";
+        return self::executeQueries($sql);
+    }
 }
