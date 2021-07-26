@@ -24,7 +24,7 @@ function incluyeme_applications_assets()
         wp_register_script('vueJS', $js . 'vueDEV.js', ['bootstrapJs'], '1.0.0');
         wp_register_script('Axios', $js . 'axios.min.js', [], '2.0.0');
         wp_register_script('selectJS', $js . 'bootstrap-select.min.js', ['bootstrapJs'], '2.0.0');
-        wp_register_script('vueApp', $js . 'app.js', ['vueJS'], '1.0.0');
+        wp_register_script('vueApp', $js . 'app1.js', ['vueJS'], '1.0.0');
         wp_register_script('bootstrap-notify', $js . 'iziToast.js', ['bootstrapJs'], '2.0.0');
         wp_register_script('defaults-es_ES', $js . 'defaults-es_ES.js', ['selectJS'], '2.0.0');
         wp_register_style('bootstrap-css', $css . 'bootstrap.min.css', [], '1.0.0', false);
