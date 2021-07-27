@@ -323,8 +323,8 @@ class incluyeme_applications
     {
         $prefix = self::$prefix;
         $where = " WHERE t1.is_active = 1
-AND t1.job_created_at <= '2021-07-27'
-AND t1.job_expires_at >= '2021-07-27'
+AND t1.job_created_at <= NOW()
+AND t1.job_expires_at >= NOW()
 AND is_filled != 3
 AND is_filled = 0 ";
         $query = "SELECT t1.id AS t1__id,
