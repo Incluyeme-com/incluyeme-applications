@@ -112,7 +112,7 @@ function incluyeme_applicants_shortcode()
 						<input v-model='job' type='text' class='form-control' id='empleoname' aria-describedby='empleoname'
 						       required>
 					</div>
-					<button @click.prevent='searchEmployee(1, 1)' type='submit' class='btn btn-primary'
+					<button @click.prevent='searchEmployee(1)' type='submit' class='btn btn-primary'
 					        style='float: right;'>
 						Buscar
 					</button>
