@@ -306,6 +306,14 @@ class incluyeme_applications
         return $obj;
     }
     
+    public function paginatedQueries($sql): array
+    {
+        $resultNumber = $this->resultsNumbers;
+        $LIMITQuery = ($resultNumber - 1) * 10 ?: 0;
+        $sql .= " LIMIT {$LIMITQuery}, 10";
+        return self::executeQueries($sql);
+    }
+    
     protected function executeQueries($sql)
     {
         return self::$wp->get_results($sql);
@@ -314,36 +322,58 @@ class incluyeme_applications
     public function searchEmployee()
     {
         $prefix = self::$prefix;
-        $where = " WHERE {$prefix}wpjb_job.is_active = 1 AND {$prefix}wpjb_job.job_expires_at < NOW() AND {$prefix}wpjb_job.is_approved = 1 ";
-        $query = "SELECT
-  {$prefix}wpjb_job.id,
-  {$prefix}wpjb_job.employer_id,
-  {$prefix}wpjb_job.post_id,
-  {$prefix}wpjb_job.job_title,
-  {$prefix}wpjb_job.company_name,
-  {$prefix}wpjb_company.company_name AS company
-FROM {$prefix}wpjb_job
+        $where = " WHERE t1.is_active = 1
+AND t1.job_created_at <= '2021-07-27'
+AND t1.job_expires_at >= '2021-07-27'
+AND is_filled != 3
+AND is_filled = 0 ";
+        $query = "SELECT t1.id AS t1__id,
+ t1.post_id AS t1__post_id,
+  t1.employer_id AS t1__employer_id,
+   t1.job_title AS t1__job_title,
+    t1.job_slug AS t1__job_slug, 
+    t1.job_description AS t1__job_description, 
+    t1.job_created_at AS t1__job_created_at,
+     t1.job_modified_at AS t1__job_modified_at,
+      t1.job_expires_at AS t1__job_expires_at, 
+      t1.job_country AS t1__job_country, 
+      t1.job_state AS t1__job_state, 
+      t1.job_zip_code AS t1__job_zip_code, 
+      t1.job_city AS t1__job_city, 
+      t1.job_address AS t1__job_address, 
+      t1.company_name AS t1__company_name,
+       t1.company_url AS t1__company_url,
+        t1.company_email AS t1__company_email, t1.is_approved 
+        AS t1__is_approved, t1.is_active AS t1__is_active,
+         t1.is_filled AS t1__is_filled, t1.is_featured AS 
+         t1__is_featured, t1.read AS t1__read, 
+         t1.membership_id AS t1__membership_id,
+          t1.pricing_id AS t1__pricing_id
+FROM `{$prefix}wpjb_job` AS `t1`
+
+
   LEFT JOIN {$prefix}wpjb_company
-    ON {$prefix}wpjb_job.employer_id = {$prefix}wpjb_company.id
+    ON t1.employer_id = {$prefix}wpjb_company.id
 ";
         if (self::getJob()) {
             $job = "%" . self::getJob() . "%";
-            $where .= " AND ({$prefix}wpjb_job.job_title LIKE '{$job}' OR 
-        {$prefix}wpjb_job.job_description LIKE '{$job}' OR 
-        {$prefix}wpjb_job.job_slug LIKE '{$job}' )";
+            $where .= " AND (t1.job_title LIKE '{$job}' OR 
+        t1.job_description LIKE '{$job}' OR 
+        t1.job_slug LIKE '{$job}' )";
         } else if (self::getJobId()) {
             $job = self::getJobId();
-            $where .= "AND {$prefix}wpjb_job.id  =  '{$job}'";
+            $where .= "AND t1.job.id  =  '{$job}'";
         } else if (self::getEmployed()) {
             $job = "%" . self::getEmployed() . "%";
-            $where .= " AND ( {$prefix}wpjb_job.company_name LIKE '{$job}' OR 
+            $where .= " AND ( t1.company_name LIKE '{$job}' OR 
         {$prefix}wpjb_company.company_name LIKE '{$job}' OR 
-        {$prefix}wpjb_job.job_slug LIKE '{$job}' OR
+        t1.job_slug LIKE '{$job}' OR
          {$prefix}wpjb_company.company_slogan LIKE '{$job}' OR 
   {$prefix}wpjb_company.company_info LIKE '{$job}' )
         ";
         }
-        $query = $query . $where . " GROUP BY {$prefix}wpjb_job.id";
+        $query = $query . $where . "GROUP BY t1.id ORDER BY t1.is_featured DESC, t1.job_created_at DESC, t1.id DESC ";
+        error_log(print_r($query, true));
         return $this->paginatedQueries($query);
     }
     
@@ -520,13 +550,5 @@ FROM {$prefix}wpjb_job
     public static function setMessage(?string $message): void
     {
         self::$message = $message;
-    }
-    
-    public function paginatedQueries($sql): array
-    {
-        $resultNumber = $this->resultsNumbers;
-        $LIMITQuery = ($resultNumber - 1) * 10 ?: 0;
-        $sql .= " LIMIT {$LIMITQuery}, 10";
-        return self::executeQueries($sql);
     }
 }
