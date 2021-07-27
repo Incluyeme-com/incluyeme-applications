@@ -311,6 +311,7 @@ class incluyeme_applications
         $resultNumber = $this->resultsNumbers;
         $LIMITQuery = ($resultNumber - 1) * 10 ?: 0;
         $sql .= " LIMIT {$LIMITQuery}, 10";
+        error_log(print_r($sql, true));
         return self::executeQueries($sql);
     }
     
@@ -372,8 +373,8 @@ FROM `{$prefix}wpjb_job` AS `t1`
   {$prefix}wpjb_company.company_info LIKE '{$job}' )
         ";
         }
-        $query = $query . $where . "GROUP BY t1.id ORDER BY t1.is_featured DESC, t1.job_created_at DESC, t1.id DESC ";
-        error_log(print_r($query, true));
+        $query = $query . $where . " GROUP BY t1.id ORDER BY t1.is_featured DESC, t1.job_created_at DESC, t1.id DESC ";
+        error_log(print_r($this->paginatedQueries($query), true));
         return $this->paginatedQueries($query);
     }
     

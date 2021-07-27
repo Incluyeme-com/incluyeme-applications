@@ -82,7 +82,7 @@ window.onload = function () {
                 this.candidatesInformation = verifications.data.message;
                 this.changeScreens(2)
             },
-            searchEmployee: async function (button, page = 1) {
+            searchEmployee: async function (button, page = 0) {
                 switch (button) {
                     case 1:
                         this.company = null;
