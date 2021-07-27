@@ -82,7 +82,7 @@ window.onload = function () {
                 this.candidatesInformation = verifications.data.message;
                 this.changeScreens(2)
             },
-            searchEmployee: async function (button, page = 0) {
+            searchEmployee: async function (button, page) {
                 switch (button) {
                     case 1:
                         this.company = null;
@@ -103,7 +103,9 @@ window.onload = function () {
                         break;
                 }
                 this.buttonAplicant = button;
-                this.resultsNumbersEmployee = page ? this.resultsNumbersEmployee + page : this.resultsNumbersEmployee
+                  console.log(this.resultsNumbersEmployee)
+                this.resultsNumbersEmployee = page ? this.resultsNumbersEmployee + page : this.resultsNumbersEmployee;
+                console.log(page)
                 const verifications = await axios.post(this.url + '/incluyeme-applications/include/verifications.php',
                     {
                         job: this.job,
