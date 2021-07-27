@@ -112,7 +112,7 @@ function incluyeme_applicants_shortcode()
 						<input v-model='job' type='text' class='form-control' id='empleoname' aria-describedby='empleoname'
 						       required>
 					</div>
-					<button @click.prevent='searchEmployee(1)' type='submit' class='btn btn-primary'
+					<button @click.prevent='searchEmployee(1, 1)' type='submit' class='btn btn-primary'
 					        style='float: right;'>
 						Buscar
 					</button>
@@ -123,7 +123,7 @@ function incluyeme_applicants_shortcode()
 						<input v-model='company' type='text' class='form-control' id='workname' aria-describedby='names'
 						       required>
 					</div>
-					<button @click.prevent='searchEmployee(2)'  type='submit' class='btn btn-primary'
+					<button @click.prevent='searchEmployee(2, 1)'  type='submit' class='btn btn-primary'
 					        style='float: right;'>
 						Buscar
 					</button>
@@ -133,7 +133,7 @@ function incluyeme_applicants_shortcode()
 						<label class='font-weight-bold' for='keyword'>Búsqueda por Job ID</label>
 						<input v-model='jobId' type='text' class='form-control' id='jodid' aria-describedby='keyword' required>
 					</div>
-					<button @click.prevent='searchEmployee(3)'  type='submit' class='btn btn-primary'
+					<button @click.prevent='searchEmployee(3, 1)'  type='submit' class='btn btn-primary'
 					        style='float: right;'>
 						Buscar
 					</button>
@@ -143,7 +143,7 @@ function incluyeme_applicants_shortcode()
 			<div class='mt-4 row'>
 				<div class='col-md-12 text-right'>
 					<button @click.prevent='changeScreens(2)' type='submit' class='btn btn-primary'>Atras</button>
-					<button @click.prevent='searchEmployee(4)'  type='submit' class='btn btn-success'>Mostar todos los
+					<button @click.prevent='searchEmployee(4, 1)'  type='submit' class='btn btn-success'>Mostar todos los
 					                                                                                empleos
 					</button>
 				</div>
