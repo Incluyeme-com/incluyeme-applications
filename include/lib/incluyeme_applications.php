@@ -328,28 +328,12 @@ AND t1.job_created_at <= NOW()
 AND t1.job_expires_at >= NOW()
 AND is_filled != 3
 AND is_filled = 0 ";
-        $query = "SELECT t1.id AS t1__id,
- t1.post_id AS t1__post_id,
-  t1.employer_id AS t1__employer_id,
-   t1.job_title AS t1__job_title,
-    t1.job_slug AS t1__job_slug, 
-    t1.job_description AS t1__job_description, 
-    t1.job_created_at AS t1__job_created_at,
-     t1.job_modified_at AS t1__job_modified_at,
-      t1.job_expires_at AS t1__job_expires_at, 
-      t1.job_country AS t1__job_country, 
-      t1.job_state AS t1__job_state, 
-      t1.job_zip_code AS t1__job_zip_code, 
-      t1.job_city AS t1__job_city, 
-      t1.job_address AS t1__job_address, 
-      t1.company_name AS t1__company_name,
-       t1.company_url AS t1__company_url,
-        t1.company_email AS t1__company_email, t1.is_approved 
-        AS t1__is_approved, t1.is_active AS t1__is_active,
-         t1.is_filled AS t1__is_filled, t1.is_featured AS 
-         t1__is_featured, t1.read AS t1__read, 
-         t1.membership_id AS t1__membership_id,
-          t1.pricing_id AS t1__pricing_id
+        $query = "SELECT   t1.id,
+  t1.employer_id,
+  t1.post_id,
+  t1.job_title,
+  t1.company_name,
+  {$prefix}wpjb_company.company_name AS company
 FROM `{$prefix}wpjb_job` AS `t1`
 
 
