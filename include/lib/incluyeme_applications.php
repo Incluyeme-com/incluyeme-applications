@@ -347,7 +347,7 @@ FROM `{$prefix}wpjb_job` AS `t1`
         t1.job_slug LIKE '{$job}' )";
         } else if (self::getJobId()) {
             $job = self::getJobId();
-            $where .= "AND t1.job.id  =  '{$job}'";
+            $where .= "AND t1.id  =  '{$job}'";
         } else if (self::getEmployed()) {
             $job = "%" . self::getEmployed() . "%";
             $where .= " AND ( t1.company_name LIKE '{$job}' OR 

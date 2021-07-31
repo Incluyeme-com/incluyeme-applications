@@ -1,9 +1,7 @@
 <?php
 function incluyeme_applicants_shortcode()
 {
-    return "
-  <style>
-    #main-content .container:before {
+    return "<style> #main-content .container:before {
         background-color: none !important;
     }</style>
 <div id='vueApplications' name='vueApp' class='container'>
@@ -58,22 +56,21 @@ function incluyeme_applicants_shortcode()
 							<label class='font-weight-bold' for='email'>Candidato {{index + 1}}</label>
 						</div>
 						<div class='col-12 mt-3'>
-							<input @change='addCandidate(data.users_id)' type='checkbox'>{{data.first_name + ' ' + data.last_name}}
+							<input @change='addCandidate(data.users_id)' type='checkbox'>{{data.first_name + ' ' +
+							                                                             data.last_name}}
 							<br>
 							<small>{{data.user_email}}</small>
 						</div>
 					</div>
-				
 				</div>
 				<div class='col-md-6 mt-3'>
 					<div class='row'>
 						<div class='col-12 mt-3'>
 							<button type='submit' class='btn btn-success' v-on:click='openUrl(data.guid)'>Ver CV
-							                                                                             cargado
+							                                                                          cargado
 							</button>
 						</div>
 					</div>
-				
 				</div>
 				<div class='col-md-12'>
 					<div class='row'>
@@ -87,15 +84,16 @@ function incluyeme_applicants_shortcode()
 				</div>
 				<hr class='w-100'>
 			</div>
-<div class='container text-right mt-2'>
-			<button type='button' v-on:click='searchMore(1, 1)' v-if='candidatesInformation.length >= 10' id='showMore' class='btn btn-secondary'
-			        style='font-size: 0.75rem;'>
-				<span>Cargar mas...</span>
-			</button>
+			<div class='row text-right mt-2'>
+				<button type='button' v-on:click='searchMore(1, 1)' v-if='candidatesInformation.length >= 10'
+				        id='showMore' class='btn btn-secondary'
+				        style='font-size: 0.75rem;'>
+					<span>Cargar mas...</span>
+				</button>
 				<div class='container text-right mt-2' v-else-if='candidatesInformation.length < 10'>
-			<p>No hay mas resultados</p>
-		</div>
-		</div>
+					<p>No hay mas resultados</p>
+				</div>
+			</div>
 			<div class='mt-4 row'>
 				<div class='col-md-12 text-right'>
 					<button @click.prevent='changeScreens(1)' type='submit' class='btn btn-primary'>Atras</button>
@@ -109,7 +107,8 @@ function incluyeme_applicants_shortcode()
 				<div class='col-12  mt-3'>
 					<div class='form-group'>
 						<label class='font-weight-bold' for='email'>Búsqueda por nombre de empleo</label>
-						<input v-model='job' type='text' class='form-control' id='empleoname' aria-describedby='empleoname'
+						<input v-model='job' type='text' class='form-control' id='empleoname'
+						       aria-describedby='empleoname'
 						       required>
 					</div>
 					<button @click.prevent='searchEmployee(1)' type='submit' class='btn btn-primary'
@@ -123,7 +122,7 @@ function incluyeme_applicants_shortcode()
 						<input v-model='company' type='text' class='form-control' id='workname' aria-describedby='names'
 						       required>
 					</div>
-					<button @click.prevent='searchEmployee(2)'  type='submit' class='btn btn-primary'
+					<button @click.prevent='searchEmployee(2)' type='submit' class='btn btn-primary'
 					        style='float: right;'>
 						Buscar
 					</button>
@@ -131,9 +130,10 @@ function incluyeme_applicants_shortcode()
 				<div class='col-12  mt-3'>
 					<div class='form-group'>
 						<label class='font-weight-bold' for='keyword'>Búsqueda por Job ID</label>
-						<input v-model='jobId' type='text' class='form-control' id='jodid' aria-describedby='keyword' required>
+						<input v-model='jobId' type='text' class='form-control' id='jodid' aria-describedby='keyword'
+						       required>
 					</div>
-					<button @click.prevent='searchEmployee(3)'  type='submit' class='btn btn-primary'
+					<button @click.prevent='searchEmployee(3)' type='submit' class='btn btn-primary'
 					        style='float: right;'>
 						Buscar
 					</button>
@@ -143,26 +143,30 @@ function incluyeme_applicants_shortcode()
 			<div class='mt-4 row'>
 				<div class='col-md-12 text-right'>
 					<button @click.prevent='changeScreens(2)' type='submit' class='btn btn-primary'>Atras</button>
-					<button @click.prevent='searchEmployee(4)'  type='submit' class='btn btn-success'>Mostar todos los
-					                                                                                empleos
+					<button @click.prevent='searchEmployee(4)' type='submit' class='btn btn-success'>Mostar todos los
+					                                                                                 empleos
 					</button>
 				</div>
 			</div>
 		</div>
 		<div v-if='step===4' class='container'>
 			<h1>Selecciona los empleos a aplicar</h1>
-			<div  class='mt-1' v-for='(data, index) of employeeInformation'>
-				<input class='mt1' @change='addJob(data.id)' type='checkbox'> {{data.job_title + ' ' + (data.company_name ? data.company_name : data.company)}}
+			<div class='mt-1' v-for='(data, index) of employeeInformation'>
+				<input class='mt1' @change='addJob(data.id)' type='checkbox'> {{data.job_title + ' ' +
+				                                                              (data.company_name ?
+				                                                              data.company_name : data.company)}}
 			</div>
 			<div class='container text-right mt-2'>
-			<button type='button' v-on:click='searchMore(2, 1)' v-if='candidatesInformation.length >= 10' id='showMore' class='btn btn-secondary'
-			        style='font-size: 0.75rem;'>
-				<span>Cargar mas...</span>
-			</button>
+				<button type='button' v-on:click='searchMore(2, 1)' v-if='candidatesInformation.length >= 10'
+				        id='showMore'
+				        class='btn btn-secondary'
+				        style='font-size: 0.75rem;'>
+					<span>Cargar mas...</span>
+				</button>
 				<div class='container text-right mt-2' v-else-if='candidatesInformation.length < 10'>
-			<p>No hay mas resultados</p>
-		</div>
-		</div>
+					<p>No hay mas resultados</p>
+				</div>
+			</div>
 			<div class='mt-4 row'>
 				<div class='col-md-12 text-right'>
 					<button @click.prevent='changeScreens(3)' type='submit' class='btn btn-primary'>Atras</button>
@@ -188,7 +192,7 @@ function incluyeme_applicants_shortcode()
 			</div>
 		</div>
 		
-				<div v-if='step===6' class='container'>
+		<div v-if='step===6' class='container'>
 			<h1>Aplicacion(es) enviadas con exito</h1>
 			<div class='mt-4 row'>
 				<div class='col-md-12 text-right'>
@@ -200,4 +204,3 @@ function incluyeme_applicants_shortcode()
 </div>
 ";
 }
-
