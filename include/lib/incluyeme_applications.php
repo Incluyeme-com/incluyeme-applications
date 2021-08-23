@@ -311,7 +311,6 @@ class incluyeme_applications
         $resultNumber = $this->resultsNumbers;
         $LIMITQuery = ($resultNumber - 1) * 10 ?: 0;
         $sql .= " LIMIT {$LIMITQuery}, 10";
-        error_log(print_r($sql, true));
         return self::executeQueries($sql);
     }
     
@@ -358,7 +357,6 @@ FROM `{$prefix}wpjb_job` AS `t1`
         ";
         }
         $query = $query . $where . " GROUP BY t1.id ORDER BY t1.is_featured DESC, t1.job_created_at DESC, t1.id DESC ";
-        error_log(print_r($this->paginatedQueries($query), true));
         return $this->paginatedQueries($query);
     }
     
@@ -454,7 +452,6 @@ FROM `{$prefix}wpjb_job` AS `t1`
         $candidatesJobs = self::executeQueries($candidatesJobs);
         for ($i = 0; $i < count($candidatesEmail); $i++) {
             for ($j = 0; $j < count($candidatesJobs); $j++) {
-                error_log(print_r($candidatesJobs, true));
                 self::$wp->insert($prefix . "wpjb_application", [
                     "job_id" => $candidatesJobs[$j]->id,
                     "user_id" => $candidatesEmail[$i]->users_id,
@@ -465,8 +462,14 @@ FROM `{$prefix}wpjb_job` AS `t1`
                     "status" => 1
                 ]);
             }
-            if (self::getApplicationMessage()) {
-                wp_mail($candidatesEmail[$i]->user_email, 'Ha aplicado exitosamente', self::getMessage());
+            if (self::getMessage()) {
+                try {
+                    error_log(print_r(self::getMessage(), true));
+                    wp_mail($candidatesEmail[$i]->user_email, 'Ha aplicado exitosamente', self::getMessage());
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                }
+                
             }
             
         }
